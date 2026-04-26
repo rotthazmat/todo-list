@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #FAF7F2;
+}
+
+/* Subtle paper grain texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Custom circular checkbox button */
+.check-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #EDE8E0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+.check-btn:hover {
+  border-color: #5B7E6B;
+  background-color: rgba(91, 126, 107, 0.07);
+}
+
+.check-btn.checked {
+  background-color: #5B7E6B;
+  border-color: #5B7E6B;
+  animation: popIn 0.2s ease-out;
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0.8); }
+  55%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* Todo item enter animation */
+.todo-enter {
+  animation: todoEnter 0.25s ease-out;
+}
+
+@keyframes todoEnter {
+  from { transform: translateY(-8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* Todo item exit animation */
+.todo-exit {
+  animation: todoExit 0.28s ease-in forwards;
+  overflow: hidden;
+}
+
+@keyframes todoExit {
+  from { transform: translateX(0);    opacity: 1; max-height: 72px; margin-bottom: 8px; }
+  to   { transform: translateX(14px); opacity: 0; max-height: 0;    margin-bottom: 0; }
+}
+
+/* Progress bar shine */
+.progress-bar {
+  background: linear-gradient(90deg, #5B7E6B, #7aaa92, #5B7E6B);
+  background-size: 200% 100%;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Input focus glow */
+.add-form:focus-within {
+  border-color: #5B7E6B;
+  box-shadow: 0 0 0 3px rgba(91, 126, 107, 0.12);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #EDE8E0; border-radius: 4px; }
