@@ -9,6 +9,16 @@ interface Todo {
   createdAt: string;
 }
 
+function authFetch(url: string, options?: RequestInit) {
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_SECRET ?? ''}`,
+    },
+  });
+}
+
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState('');
@@ -19,10 +29,10 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch('/api/todos')
+    authFetch('/api/todos')
       .then(r => r.json())
-      .then((data: Todo[]) => {
-        setTodos(data);
+      .then((data: unknown) => {
+        setTodos(Array.isArray(data) ? data : []);
         setLoading(false);
       });
   }, []);
@@ -33,7 +43,7 @@ export default function Home() {
     if (!title || submitting) return;
     setSubmitting(true);
     setInput('');
-    const res = await fetch('/api/todos', {
+    const res = await authFetch('/api/todos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title }),
@@ -49,7 +59,7 @@ export default function Home() {
   }
 
   async function toggleTodo(id: string) {
-    const res = await fetch(`/api/todos/${id}`, { method: 'PATCH' });
+    const res = await authFetch(`/api/todos/${id}`, { method: 'PATCH' });
     const updated: Todo = await res.json();
     setTodos(prev => prev.map(t => t.id === id ? updated : t));
   }
@@ -57,7 +67,7 @@ export default function Home() {
   async function deleteTodo(id: string) {
     setExitIds(prev => new Set(prev).add(id));
     await new Promise(r => setTimeout(r, 280));
-    await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+    await authFetch(`/api/todos/${id}`, { method: 'DELETE' });
     setTodos(prev => prev.filter(t => t.id !== id));
     setExitIds(prev => { const s = new Set(prev); s.delete(id); return s; });
   }
@@ -66,7 +76,7 @@ export default function Home() {
     const doneIds = todos.filter(t => t.done).map(t => t.id);
     setExitIds(new Set(doneIds));
     await new Promise(r => setTimeout(r, 300));
-    await fetch('/api/todos', { method: 'DELETE' });
+    await authFetch('/api/todos', { method: 'DELETE' });
     setTodos(prev => prev.filter(t => !t.done));
     setExitIds(new Set());
   }
